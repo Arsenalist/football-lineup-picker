@@ -7,6 +7,22 @@ function generateUUID(){
     });
     return uuid;
 };
+function getEligiblePositionsForFormationLayer(formationDepth, formationLayer) {
+  switch(formationLayer) {
+      case 1:
+          return ['G'];
+      case 2:
+          return ['D', 'M'];
+      case 3:
+          return ['M', 'F'];
+      case 4:
+          return formationDepth == 4 ? ['F', 'M'] : ['M', 'F'];
+      case 5:
+          return ['F', 'M'];
+      default:
+          return ['G', 'D', 'M', 'F'];
+  }
+}
 
 function generatePlayerGroups(formation) {
   // Goalie
@@ -26,7 +42,8 @@ function generatePlayerGroups(formation) {
     groups.push(
       {
         groupType: generateUUID(),
-        players: players
+        players: players,
+        eligiblePositions: getEligiblePositionsForFormationLayer(formationLayers.length, i+1)
       }
     );
   }
@@ -73,7 +90,7 @@ var PitchActions = {
 };
 var PitchStore = {
   _state: {
-    data: {pitch: pitchData, reference: referenceData, currentlyEditing: ''}
+    data: {pitch: pitchData, reference: referenceData, currentlyEditing: null}
   },
 
   getState: function() {
@@ -93,11 +110,35 @@ var PitchStore = {
   },
   addPlayer: function(player) {
     var playerGroups = this._state.data.pitch.playerGroups;
-    for (var i=0; i<playerGroups.length; i++) {
-      for (var j=0; j<playerGroups[i].players.length; j++) {
-        if (playerGroups[i].players[j].key ==this._state.data.currentlyEditing) {
-          playerGroups[i].players[j] = JSON.parse(JSON.stringify(player));
+    if (this._state.data.currentlyEditing != null) {
+      for (var i=0; i<playerGroups.length; i++) {
+        for (var j=0; j<playerGroups[i].players.length; j++) {
+          if (playerGroups[i].players[j].key == this._state.data.currentlyEditing) {
+            playerGroups[i].players[j] = JSON.parse(JSON.stringify(player));
+          }
         }
+      }
+      this._state.data.currentlyEditing = null;
+    } else {
+      var highestRank = null;
+      var targetI = -1, targetJ = -1;
+      for (var i=0; i<playerGroups.length; i++) {
+        var rank = playerGroups[i].eligiblePositions.indexOf(player.position);
+        if (rank == -1) {
+          continue;
+        }
+        for (var j=0; j<playerGroups[i].players.length; j++) {
+          if (playerGroups[i].players[j].name == "") {
+            if (highestRank == null || rank < highestRank) {
+              targetI = i;
+              targetJ = j;
+              highestRank = rank;
+            }
+          }
+        }
+      }
+      if (targetI != -1 && targetJ != -1) {
+        playerGroups[targetI].players[targetJ] = JSON.parse(JSON.stringify(player));
       }
     }
     this.onChange();
