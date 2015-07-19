@@ -8,6 +8,31 @@ function generateUUID(){
     return uuid;
 };
 
+function generatePlayerGroups(formation) {
+  // Goalie
+  var formation = '1-' + formation;
+  var formationLayers = formation.split('-');
+  var groups = [];
+  for (var i=0; i<formationLayers.length; i++) {
+    var players = [];
+    for (var j=0; j<parseInt(formationLayers[i]); j++) {
+      players.push(
+        {
+          key: generateUUID(),
+          name: ''
+        }
+      );
+    }
+    groups.push(
+      {
+        groupType: generateUUID(),
+        players: players
+      }
+    );
+  }
+  return groups;
+}
+
 var referenceData = {
   players: [
     {name: 'Bellerin', position: 'D'},
@@ -22,43 +47,11 @@ var referenceData = {
   ]
 }
 
+
+
 var pitchData = {
-  playerGroups: [
-    {
-      groupType: 'D',
-      players: [
-        {
-          key: generateUUID(),
-          name: 'Bellerin'
-        },
-        {
-          key: generateUUID(),
-          name: 'Mertesacker'
-        },
-        {
-          key: generateUUID(),
-          name: ''
-        },
-        {
-          key: generateUUID(),
-          name: ''
-        }
-      ]
-    },
-    {
-      groupType: 'M',
-      players: [
-        {
-          name: 'Ramsey'
-        },
-        {
-          name: 'Wilshere'
-        }
-
-      ]
-    }
-
-  ]
+  formation: '4-4-2',
+  playerGroups: []
 };
 
 var PitchActions = {
@@ -70,6 +63,12 @@ var PitchActions = {
   },
   fillPosition: function(player) {
     PitchStore.fillPosition(player);
+  },
+  setFormation: function(formation) {
+    PitchStore.setFormation(formation);
+  },
+  getFormation: function() {
+    return PitchStore.getFormation();
   }
 };
 var PitchStore = {
@@ -97,7 +96,7 @@ var PitchStore = {
     for (var i=0; i<playerGroups.length; i++) {
       for (var j=0; j<playerGroups[i].players.length; j++) {
         if (playerGroups[i].players[j].key ==this._state.data.currentlyEditing) {
-          playerGroups[i].players[j] = player;
+          playerGroups[i].players[j] = JSON.parse(JSON.stringify(player));
         }
       }
     }
@@ -105,6 +104,15 @@ var PitchStore = {
   },
   fillPosition: function(player) {
     this._state.data.currentlyEditing = player.key;
+    this.onChange();
+  },
+  setFormation: function(formation) {
+    this._state.data.pitch.formation = formation;
+    this._state.data.pitch.playerGroups = generatePlayerGroups(formation);
+    this.onChange();
+  },
+  getFormation: function() {
+    return this._state.data.pitch.formation;
   },
   onChange: function() {}
 };
@@ -120,7 +128,9 @@ var Pitch = React.createClass({
 
   componentDidMount: function() {
     // when the assignment store says its data changed, we update
+
     PitchStore.onChange = this.onChange;
+    PitchActions.setFormation(PitchActions.getFormation());
   },
 
   onChange: function() {
@@ -130,6 +140,7 @@ var Pitch = React.createClass({
   render: function() {
     return (
       <div class="row">
+      <FormationSelector />
       <div className="col-xs-6 pitch">
         <PlayerGroupList data={this.state.data.pitch.playerGroups}/>
       </div>
@@ -140,6 +151,28 @@ var Pitch = React.createClass({
     );
   }
 });
+
+var FormationSelector = React.createClass({
+  componentDidMount: function() {
+    React.findDOMNode(this.refs.formation).value = PitchActions.getFormation();
+  },
+  handleFormationChange: function(e) {
+    e.preventDefault();
+    PitchActions.setFormation(e.target.value);
+  },
+  render: function() {
+    return (
+      <div className="formationSelector">
+        <select ref="formation" onChange={this.handleFormationChange}>
+          <option value="">Select a formation</option>
+          <option value="4-4-2">4-4-2</option>
+          <option value="4-1-3-1">4-1-3-1</option>
+        </select>
+      </div>
+    );
+  }
+});
+
 
 var PlayerGroupList = React.createClass({
   render: function() {
@@ -158,10 +191,32 @@ var PlayerGroupList = React.createClass({
 
 var PlayerGroup = React.createClass({
   render: function() {
+    var numPlayers = this.props.data.players.length;
+    var colClass;
+    switch(numPlayers) {
+        case 1:
+            colClass = 'col-xs-12';
+            break;
+        case 2:
+            colClass = 'col-xs-6';
+            break;
+        case 3:
+            colClass = 'col-xs-4';
+            break;
+        case 4:
+            colClass = 'col-xs-3';
+            break;
+        case 5:
+            colClass = 'col-xs-2';
+            break;
+        default:
+            colClass = 'col-xs-12';
+    }
+    colClass = colClass;
     var players = this.props.data.players.map(function (player) {
-      var playerOrEmpty = player.name == "" ? <EmptyPlayer data={player}/> : <Player onRemovePlayer={this.removePlayer} key={player.name} data={player}/>;
+      var playerOrEmpty = player.name == "" ? <EmptyPlayer key={player.key} data={player}/> : <Player key={player.key} onRemovePlayer={this.removePlayer} key={player.name} data={player}/>;
       return (
-        <div className="col-sm-2">
+        <div className={colClass}>
           {playerOrEmpty}
         </div>
       );

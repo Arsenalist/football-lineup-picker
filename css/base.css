@@ -9,6 +9,7 @@
   text-align: center;
   color: black;
   font-size: .7em;
+  margin: auto auto;
 }
 .player img.shirt {
   display: block;
