@@ -67,6 +67,7 @@ var referenceData = {
 
 
 var pitchData = {
+  key: null,
   formation: '4-4-2',
   playerGroups: []
 };
@@ -110,6 +111,7 @@ var PitchStore = {
   },
   addPlayer: function(player) {
     var playerGroups = this._state.data.pitch.playerGroups;
+    // We're targeting a specific spot
     if (this._state.data.currentlyEditing != null) {
       for (var i=0; i<playerGroups.length; i++) {
         for (var j=0; j<playerGroups[i].players.length; j++) {
@@ -119,6 +121,8 @@ var PitchStore = {
         }
       }
       this._state.data.currentlyEditing = null;
+
+    // Figure out best place to put player
     } else {
       var highestRank = null;
       var targetI = -1, targetJ = -1;
@@ -182,6 +186,7 @@ var Pitch = React.createClass({
     return (
       <div class="row">
       <FormationSelector />
+      <UserActions />
       <div className="col-xs-6 pitch">
         <PlayerGroupList data={this.state.data.pitch.playerGroups}/>
       </div>
@@ -192,6 +197,17 @@ var Pitch = React.createClass({
     );
   }
 });
+
+var UserActions = React.createClass({
+  render: function() {
+    return (
+      <div className="userActions">
+        <input type="button" className="btn btn-success" value="Save"/>
+      </div>
+    );
+  }
+});
+
 
 var FormationSelector = React.createClass({
   componentDidMount: function() {
@@ -302,7 +318,8 @@ var EmptyPlayer = React.createClass({
 });
 
 var SelectablePlayer = React.createClass({
-  handlePlayerSelection: function(){
+  handlePlayerSelection: function(e){
+    e.preventDefault();
     PitchActions.addPlayer(this.props.data);
   },
   render: function() {
@@ -347,8 +364,27 @@ var PlayerFinder = React.createClass({
   }
 });
 
+var Route = ReactRouter.Route;
 
-React.render(
-  <Pitch />,
-  document.getElementById('content')
+// declare our routes and their hierarchy
+var routes = (
+  <Route handler={App}>
+    <Route path="pitch" handler={Pitch}/>
+  </Route>
 );
+
+var RouteHandler = ReactRouter.RouteHandler;
+
+var App = React.createClass({
+  render () {
+    return (
+      <div>
+        <RouteHandler/>
+      </div>
+    )
+  }
+});
+
+ReactRouter.run(routes, ReactRouter.HashLocation, (Root) => {
+  React.render(<Root/>, document.getElementById('content'));
+});
