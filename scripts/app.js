@@ -66,13 +66,10 @@ var referenceData = {
 
 
 
-var pitchData = {
-  key: null,
-  formation: '4-4-2',
-  playerGroups: []
-};
-
 var PitchActions = {
+  loadPitchData: function(key, version) {
+    PitchStore.loadPitchData(key, version);
+  },
   removePlayer: function(player) {
     PitchStore.removePlayer(player);
   },
@@ -87,17 +84,49 @@ var PitchActions = {
   },
   getFormation: function() {
     return PitchStore.getFormation();
+  },
+  savePitch: function() {
+    PitchStore.savePitch();
+  },
+  getPitchData: function() {
+    return PitchStore.getPitchData();
   }
 };
 var PitchStore = {
   _state: {
-    data: {pitch: pitchData, reference: referenceData, currentlyEditing: null}
+    data: {pitch: {}, reference: referenceData, currentlyEditing: null}
   },
 
   getState: function() {
     return this._state;
   },
 
+  loadPitchData: function(key, version) {
+    var that = this;
+    console.log(key, version);
+    var url = "https://zarar.firebaseio.com/lineups/" + key + version;
+    console.log(url);
+    var fire = new Firebase(url);
+    fire.on("value", function(snapshot) {
+      if (snapshot.val() != null) {
+
+        that._state.data.pitch = snapshot.val();
+        console.log(snapshot.val());
+        console.log("about to call onchange inside firebase success", that._state.data.pitch);
+      } else {
+        console.log("shoudl load from 442");
+        PitchActions.setFormation('4-4-2');
+        console.log("fa is ", PitchActions.getPitchData());
+      }
+      that.onChange();
+    }, function (errorObject) {
+      alert("The read failed: " + errorObject.code);
+    });
+  },
+  getPitchData: function() {
+    console.log("in pitch data", this._state.data.pitch);
+    return this._state.data.pitch;
+  },
   removePlayer: function(player) {
     var playerGroups = this._state.data.pitch.playerGroups;
     for (var i=0; i<playerGroups.length; i++) {
@@ -158,6 +187,25 @@ var PitchStore = {
   },
   getFormation: function() {
     return this._state.data.pitch.formation;
+    this.onChange();
+  },
+  savePitch: function() {
+    console.log("savePitch");
+    var fire = new Firebase("https://zarar.firebaseio.com/");
+    var lineups = fire.child("lineups");
+    console.log("we are", this._state.data.pitch);
+    this._state.data.pitch.key = this._state.data.pitch.key ? this._state.data.pitch.key : generateUUID();
+    this._state.data.pitch.version = this._state.data.pitch.version ? this._state.data.pitch.version : 1;
+    console.log("afe key thing");
+    lineups = lineups.child(this._state.data.pitch.key+this._state.data.pitch.version);
+    lineups.set(this._state.data.pitch, function(error) {
+  if (error) {
+    alert("Data could not be saved." + error);
+  } else {
+    alert("Data saved successfully.");
+  }});
+    console.log("done");
+    this.onChange();
   },
   onChange: function() {}
 };
@@ -168,27 +216,40 @@ var Pitch = React.createClass({
   },
 
   getInitialState: function() {
+    var key = this.props.params.key;
+    var version = this.props.params.version;
+    if (key && version) {
+      console.log("loading from URls");
+      PitchActions.loadPitchData(key, version);
+    } else {
+      PitchActions.setFormation('4-4-2');
+    }
+    console.log("initial state in pitch is ", this.getStateFromStore());
+
     return this.getStateFromStore();
   },
 
   componentDidMount: function() {
     // when the assignment store says its data changed, we update
-
+    console.log("Pitch component mounted");
     PitchStore.onChange = this.onChange;
-    PitchActions.setFormation(PitchActions.getFormation());
   },
 
   onChange: function() {
+    console.log("onChange in Pitch, calling setState");
     this.setState(this.getStateFromStore());
   },
 
   render: function() {
+    if (!this.state.data){
+      return <div className="spinner"></div>
+    }
     return (
       <div class="row">
       <FormationSelector />
       <UserActions />
       <div className="col-xs-6 pitch">
-        <PlayerGroupList data={this.state.data.pitch.playerGroups}/>
+        <PlayerGroupList />
       </div>
       <div className="col-xs-6">
         <PlayerFinder data={this.state.data.reference}/>
@@ -199,10 +260,14 @@ var Pitch = React.createClass({
 });
 
 var UserActions = React.createClass({
+  handleSave: function(e) {
+    e.preventDefault();
+    PitchActions.savePitch();
+  },
   render: function() {
     return (
       <div className="userActions">
-        <input type="button" className="btn btn-success" value="Save"/>
+        <input onClick={this.handleSave} type="button" className="btn btn-success" value="Save"/>
       </div>
     );
   }
@@ -221,7 +286,6 @@ var FormationSelector = React.createClass({
     return (
       <div className="formationSelector">
         <select ref="formation" onChange={this.handleFormationChange}>
-          <option value="">Select a formation</option>
           <option value="4-4-2">4-4-2</option>
           <option value="4-1-3-1">4-1-3-1</option>
         </select>
@@ -233,7 +297,11 @@ var FormationSelector = React.createClass({
 
 var PlayerGroupList = React.createClass({
   render: function() {
-    var playerGroups = this.props.data.map(function (playerGroup) {
+    if (jQuery.isEmptyObject(PitchActions.getPitchData())) {
+      console.log("compareing == true");
+      return <div>Loading</div>;
+    }
+    var playerGroups = PitchActions.getPitchData().playerGroups.map(function (playerGroup) {
       return (
         <PlayerGroup key={playerGroup.groupType} data={playerGroup} />
       );
@@ -369,7 +437,8 @@ var Route = ReactRouter.Route;
 // declare our routes and their hierarchy
 var routes = (
   <Route handler={App}>
-    <Route path="pitch" handler={Pitch}/>
+    <Route path="/pitch/:key/:version" handler={Pitch}/>
+    <Route path="/pitch" handler={Pitch}/>
   </Route>
 );
 
