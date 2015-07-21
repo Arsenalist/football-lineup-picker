@@ -2,6 +2,8 @@
   width: 490px;
   height: 470px;
   background: url('http://cdn.ismfg.net/static/plfpl/img/pitch.png');
+  text-align: center;
+  margin: auto auto;
 }
 
 .player {
@@ -19,4 +21,9 @@
 
 .playerGroup {
   margin-bottom: 20px;
+}
+
+.userActions, .formationSelector {
+  margin: 15px;
+  text-align: center;
 }

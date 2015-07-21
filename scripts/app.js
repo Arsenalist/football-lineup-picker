@@ -138,9 +138,23 @@ var PitchStore = {
     }
     this.onChange();
   },
+  isPlayerAlreadyAdded: function(playerKey) {
+    var playerGroups = this._state.data.pitch.playerGroups;
+    for (var i=0; i<playerGroups.length; i++) {
+      for (var j=0; j<playerGroups[i].players.length; j++) {
+        if (playerGroups[i].players[j].key == playerKey) {
+          return true;
+        }
+      }
+    }
+    return false;
+  },
   addPlayer: function(player) {
     var playerGroups = this._state.data.pitch.playerGroups;
     // We're targeting a specific spot
+    if (this.isPlayerAlreadyAdded(player.key)) {
+      return;
+    }
     if (this._state.data.currentlyEditing != null) {
       for (var i=0; i<playerGroups.length; i++) {
         for (var j=0; j<playerGroups[i].players.length; j++) {
@@ -245,14 +259,18 @@ var Pitch = React.createClass({
       return <div className="spinner"></div>
     }
     return (
-      <div class="row">
-      <FormationSelector />
-      <UserActions />
-      <div className="col-xs-6 pitch">
-        <PlayerGroupList />
-      </div>
-      <div className="col-xs-6">
-        <PlayerFinder data={this.state.data.reference}/>
+      <div>
+      <div className="row">
+        <div className="col-xs-6">
+          <FormationSelector />
+          <div className="pitch">
+            <PlayerGroupList />
+          </div>
+          <UserActions />
+        </div>
+        <div className="col-xs-6">
+          <PlayerFinder data={this.state.data.reference}/>
+        </div>
       </div>
       </div>
     );
@@ -268,6 +286,7 @@ var UserActions = React.createClass({
     return (
       <div className="userActions">
         <input onClick={this.handleSave} type="button" className="btn btn-success" value="Save"/>
+        <Message />
       </div>
     );
   }
@@ -399,34 +418,76 @@ var SelectablePlayer = React.createClass({
     );
   }
 });
+var Message = React.createClass({
+  getInitialState: function() {
+    return (
+      {message: this.props.message}
+    );
+  },
+  render: function() {
+    return (
+      <div className="alert alert-info">{this.state.message}</div>
+    );
+  }
+});
 
 var PlayerFinder = React.createClass({
+  getInitialState: function() {
+    return {};
+  },
+  handleFilterPosition: function(e) {
+    e.preventDefault();
+    var position = React.findDOMNode(this.refs.position).value;
+    var selectablePlayers = [];
+    if (position == "") {
+      this.setState({selectablePlayers: this.state.allPlayers});
+      return;
+    }
+    for (var i=0; i<this.state.allPlayers.length; i++) {
+      console.log(this.state.allPlayers[i]);
+      if (this.state.allPlayers[i].props.data.position == position) {
+        selectablePlayers.push(this.state.allPlayers[i]);
+      }
+    }
+    this.setState({selectablePlayers: selectablePlayers});
+  },
+  componentDidMount: function() {
+    var that = this;
+    $.get( "http://api.thescore.com/epl/teams/56/players", function( data ) {
+      data.sort(function(a, b) {
+        return ((a.last_name < b.last_name) ? -1 : ((a.last_name > b.last_name) ? 1 : 0));
+      });
+      var selectablePlayers = data.map(function (p) {
+        var player = {
+          key: p.id,
+          name: p.first_initial_and_last_name,
+          position: p.position_abbreviation,
+          lastName: p.last_name,
+        }
+        return (
+          <SelectablePlayer data={player}/>
+        );
+      });
+      that.setState({selectablePlayers: selectablePlayers, allPlayers: selectablePlayers});
+    });
+  },
   render: function() {
-    var selectablePlayers = this.props.data.players.map(function (player) {
-      return (
-        <SelectablePlayer data={player}/>
-      );
-    }.bind(this));
 
     return (
       <div>
-      <div>
-        <select>
-          <option value="">Show All Positions</option>
+        <select onChange={this.handleFilterPosition} ref="position">
+          <option value="">Show All</option>
           <option value="D">Show Defenders</option>
           <option value="M">Show Midfielders</option>
           <option value="F">Show Forwards</option>
         </select>
-      </div>
-      <div>
-        <table>
+        <table className="table table-striped table-condensed table-bordered">
         <tr>
           <th>Name</th>
           <th>Position</th>
         </tr>
-          {selectablePlayers}
+          {this.state.selectablePlayers}
         </table>
-      </div>
       </div>
     );
   }
