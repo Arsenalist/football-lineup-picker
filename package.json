@@ -1,0 +1,33 @@
+{
+  "name": "lineup-picker",
+  "version": "0.0.3",
+  "description": "Lineup Picker.",
+  "main": "scripts/app.js",
+  "dependencies": {
+    "flux": "^2.0.1",
+    "keymirror": "~0.1.0",
+    "object-assign": "^1.0.0",
+    "react": "^0.13.0",
+    "react-router": "0.13.3"
+  },
+  "devDependencies": {
+    "browserify": "^6.2.0",
+    "envify": "^3.0.0",
+    "reactify": "^0.15.2",
+    "uglify-js": "~2.4.15",
+    "watchify": "^2.1.1",
+    "babelify": "6.1.3"
+  },
+  "scripts": {
+    "start": "watchify -o scripts/bundle.js -v -d scripts/app.js",
+    "build": "browserify . -t [envify --NODE_ENV production] | uglifyjs -cm > scripts/bundle.min.js"
+  },
+  "author": "Zarar Siddiqi",
+  "browserify": {
+    "transform": [
+    "reactify",
+    "envify",
+    "babelify"
+    ]
+  }
+}
