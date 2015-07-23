@@ -13,7 +13,11 @@ var PlayerFinder = React.createClass({
   },
   handleFilterPosition: function(e) {
     e.preventDefault();
-    this.setState({filterPosition: React.findDOMNode(this.refs.position).value});
+    this.setState({filterPosition: e.target.value});
+  },
+
+  componentWillUnmount: function() {
+    AppStore.removeChangeListener(this._onChange);
   },
 
   componentDidMount: function() {
