@@ -1,46 +1,55 @@
 var React = require('react');
 var SelectablePlayer = require('./SelectablePlayer.react.js');
+var AppStore = require('../stores/AppStore.js');
+var AppActionCreator = require('../actioncreators/AppActionCreators.js');
+
 var PlayerFinder = React.createClass({
+
   getInitialState: function() {
-    return {};
+    return {
+      players: [],
+      filterPosition: ''
+    };
   },
   handleFilterPosition: function(e) {
     e.preventDefault();
-    var position = React.findDOMNode(this.refs.position).value;
-    var selectablePlayers = [];
-    if (position == "") {
-      this.setState({selectablePlayers: this.state.allPlayers});
-      return;
-    }
-    for (var i=0; i<this.state.allPlayers.length; i++) {
-      console.log(this.state.allPlayers[i]);
-      if (this.state.allPlayers[i].props.data.position == position) {
-        selectablePlayers.push(this.state.allPlayers[i]);
-      }
-    }
-    this.setState({selectablePlayers: selectablePlayers});
+    this.setState({filterPosition: React.findDOMNode(this.refs.position).value});
   },
+
   componentDidMount: function() {
-    var that = this;
-    $.get( "http://api.thescore.com/epl/teams/56/players", function( data ) {
-      data.sort(function(a, b) {
-        return ((a.last_name < b.last_name) ? -1 : ((a.last_name > b.last_name) ? 1 : 0));
-      });
-      var selectablePlayers = data.map(function (p) {
-        var player = {
-          key: p.id,
-          name: p.first_initial_and_last_name,
-          position: p.position_abbreviation,
-          lastName: p.last_name,
-        }
-        return (
-          <SelectablePlayer data={player}/>
-        );
-      });
-      that.setState({selectablePlayers: selectablePlayers, allPlayers: selectablePlayers});
+    AppStore.addChangeListener(this._onChange);
+    AppActionCreator.getPlayers();
+  },
+
+  _onChange: function() {
+    this.setState({
+      players: AppStore.getPlayers()
     });
   },
+
   render: function() {
+    var filteredPlayers = [];
+    if (this.state.filterPosition == '') {            
+      filteredPlayers = this.state.players;
+    } else {
+      for (var i=0; i<this.state.players.length; i++) {        
+        if (this.state.players[i].position_abbreviation == this.state.filterPosition) {
+          filteredPlayers.push(this.state.players[i]);
+        }
+      }
+    } 
+
+    var selectablePlayers = filteredPlayers.map(function (p) {
+      var player = {
+        key: p.id,
+        name: p.first_initial_and_last_name,
+        position: p.position_abbreviation,
+        lastName: p.last_name,
+      }
+      return (
+        <SelectablePlayer data={player}/>
+      );
+    });
 
     return (
       <div>
@@ -55,7 +64,7 @@ var PlayerFinder = React.createClass({
           <th>Name</th>
           <th>Position</th>
         </tr>
-          {this.state.selectablePlayers}
+          {selectablePlayers}
         </table>
       </div>
     );
