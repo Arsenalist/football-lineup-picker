@@ -14,6 +14,11 @@ var Message = React.createClass({
     AppStore.removeChangeListener(this._onChange);
   },
 
+  componentDidUpdate: function() {
+    if (FB) FB.XFBML.parse();
+    twttr.widgets.load();
+  },
+
   componentDidMount: function() {
     AppStore.addChangeListener(this._onChange);
   },
@@ -26,7 +31,7 @@ var Message = React.createClass({
 
   render: function() {
       if (this.state.message != null) {
-        return <div className="alert alert-info">{this.state.message}</div>
+        return <div dangerouslySetInnerHTML={{__html: this.state.message}}  className="alert alert-info"/>
       }  else {
         return <span/>;
       }

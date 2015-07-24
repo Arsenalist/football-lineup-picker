@@ -41,6 +41,8 @@ var UserActions = React.createClass({
     return (
       <div className="userActions">
         <input onClick={this.handleSave} type="button" className="btn btn-success" value="Save"/>
+        <Message />
+
       </div>
     );
   }

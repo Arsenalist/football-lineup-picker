@@ -12,7 +12,12 @@ var _message = null;
 var _location = null
 
 var AppStore = assign({}, EventEmitter.prototype, {
-
+  setSaveLineupMessage: function(lineup) {
+    var permalink = location.origin + location.pathname + '#/pitch/' + lineup.key;
+    _message = '<div class="share-link">Lineup permalink: <input class="form-control" type="text" value="' + permalink + '" onclick="this.select()"/></div>' +
+      '<div class="share-link"><div class="fb-share-button" data-layout="button"></div></div>' +
+      '<div class="share-link"><a href="https://twitter.com/share" class="twitter-share-button" data-via="arsenalist" data-related="arseblog" data-count="none">Tweet</div>';
+  },
   setLocation: function(lineup) {
     _location = '/pitch/' + lineup.key;
   },
@@ -165,6 +170,7 @@ AppDispatcher.register(function(action) {
     case AppConstants.LINEUP_SAVED:
        _lineup = action.lineup;
        AppStore.setLocation(action.lineup);
+       AppStore.setSaveLineupMessage(action.lineup);
        AppStore.emitChange();
          break;
     default:
