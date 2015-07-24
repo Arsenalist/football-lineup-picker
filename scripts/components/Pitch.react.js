@@ -2,6 +2,7 @@ var FormationSelector = require('./FormationSelector.react.js');
 var PlayerGroup = require('./PlayerGroup.react.js');
 var PlayerGroupList = require('./PlayerGroupList.react.js');
 var UserActions = require('./UserActions.react.js');
+var Message = require('./Message.react.js');
 var PlayerFinder = require('./PlayerFinder.react.js');
 var AppStore = require('../stores/AppStore.js');
 var AppActionCreator = require('../actioncreators/AppActionCreators.js');
@@ -54,6 +55,7 @@ var Pitch = React.createClass({
             <PlayerGroupList lineup={this.state.lineup}/>
           </div>
           <UserActions />
+          <Message />
         </div>
         <div className="col-xs-6">
           <PlayerFinder />

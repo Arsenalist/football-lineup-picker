@@ -35,7 +35,7 @@ var FormationSelector = React.createClass({
   render: function() {
     return (
       <div className="formationSelector">
-        <select ref="formation" onChange={this.handleFormationChange}>
+        <select value="" ref="formation" onChange={this.handleFormationChange}>
           <option value="">Change Formation</option>
           <option value="3-4-3">3-4-3</option>
           <option value="4-4-2">4-4-2</option>

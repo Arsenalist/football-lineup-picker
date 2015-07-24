@@ -42,6 +42,18 @@ var AppActions = {
       actionType: AppConstants.MARK_FOR_REPLACEMENT,
       playerKey: playerKey
     });
+  },
+  setMessage: function(message) {
+    AppDispatcher.dispatch({
+      actionType: AppConstants.SET_MESSAGE,
+      message: message
+    });
+  },
+  lineupSaved: function(lineup) {
+    AppDispatcher.dispatch({
+      actionType: AppConstants.LINEUP_SAVED,
+      lineup: lineup
+    });
   }
 
 

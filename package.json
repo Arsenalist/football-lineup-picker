@@ -21,7 +21,7 @@
   },
   "scripts": {
     "start": "watchify -o scripts/bundle.js -v -d scripts/app.js",
-    "build": "browserify . -t [envify --NODE_ENV production] | uglifyjs -cm > scripts/bundle.min.js"
+    "build": "browserify . -t [envify --NODE_ENV production] | uglifyjs -cm > scripts/bundle.js"
   },
   "author": "Zarar Siddiqi",
   "browserify": {

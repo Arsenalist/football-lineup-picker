@@ -7,5 +7,7 @@ module.exports = keyMirror({
   SET_FORMATION: null,
   ADD_PLAYER: null,
   REMOVE_PLAYER: null,
-  MARK_FOR_REPLACEMENT: null
+  MARK_FOR_REPLACEMENT: null,
+  SET_MESSAGE: null,
+  LINEUP_SAVED: null
 });

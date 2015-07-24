@@ -9,6 +9,7 @@ var EmptyPlayer = React.createClass({
 
   handlePlayerReplace: function(){
     AppActionCreator.markForReplacement(this.props.data.key);
+    AppActionCreator.setMessage("hi there");
   },
   render: function() {
     return (      

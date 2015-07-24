@@ -45,7 +45,6 @@ var PlayerGroup = React.createClass({
       } else {
         component = <Player data={player}/>;
       }
-      console.log(component);
       return (
         <div className={colClass}>
           {component}

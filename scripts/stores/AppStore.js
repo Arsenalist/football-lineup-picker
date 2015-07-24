@@ -8,12 +8,16 @@ var CHANGE_EVENT = 'change';
 var _players = [];
 var _lineup = {};
 var _formation = null;
-
+var _message = null;
+var _location = null
 
 var AppStore = assign({}, EventEmitter.prototype, {
 
+  setLocation: function(lineup) {
+    _location = '/pitch/' + lineup.key;
+  },
+
   isPlayerAlreadyAdded: function(playerKey) {
-    console.log("don't get called");
     var playerGroups = _lineup.playerGroups;
     for (var i=0; i<playerGroups.length; i++) {
       for (var j=0; j<playerGroups[i].players.length; j++) {
@@ -86,6 +90,14 @@ var AppStore = assign({}, EventEmitter.prototype, {
     }
   },
 
+  getLocation: function() {
+    return _location;
+  },
+
+  getMessage: function() {
+    return _message;
+  },
+
   getPlayers: function() {
   	return _players;
   },
@@ -144,6 +156,15 @@ AppDispatcher.register(function(action) {
          break;
     case AppConstants.MARK_FOR_REPLACEMENT:
        AppStore.markForReplacement(action.playerKey);
+       AppStore.emitChange();
+         break;
+    case AppConstants.SET_MESSAGE:
+       _message = action.message;
+       AppStore.emitChange();
+         break;
+    case AppConstants.LINEUP_SAVED:
+       _lineup = action.lineup;
+       AppStore.setLocation(action.lineup);
        AppStore.emitChange();
          break;
     default:

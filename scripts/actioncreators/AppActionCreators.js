@@ -58,8 +58,23 @@ function generatePlayerGroups(formation) {
   }
   return groups;
 }
-
 var AppActionCreator = {
+
+  saveLineup: function(lineup) {
+    lineup.key = generateUUID();
+    var fire = new Firebase("https://zarar.firebaseio.com/");
+    var lineups = fire.child("lineups");
+    lineups = lineups.child(lineup.key);
+    lineups.set(lineup, function(error) {
+      if (error) {
+        alert("Data could not be saved." + error);
+      } else {
+        AppActions.lineupSaved(lineup);
+      }
+
+    });
+  },
+
   getPlayers: function() {
     $.get( "http://api.thescore.com/epl/teams/56/players", function( data ) {
         data.sort(function(a, b) {
@@ -97,7 +112,11 @@ var AppActionCreator = {
   },
   markForReplacement: function(playerKey) {
     AppActions.markForReplacement(playerKey);
+  },
+  setMessage: function(message) {
+    AppActions.setMessage(message);
   }
+
 }
 
 module.exports = AppActionCreator;
