@@ -5,7 +5,7 @@ var ActivePlayer = React.createClass({
   render: function() {
     return (
       <div className="player">
-        <img className="shirt" src="http://i.imgur.com/fzzIaP8.png"/>
+        <img className="shirt" src="https://i.imgur.com/fzzIaP8.png"/>
       </div>
     );
   }

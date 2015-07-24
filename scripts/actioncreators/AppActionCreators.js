@@ -76,7 +76,7 @@ var AppActionCreator = {
   },
 
   getPlayers: function() {
-    $.get( "http://api.thescore.com/epl/teams/56/players", function( data ) {
+    $.get( "https://api.thescore.com/epl/teams/56/players", function( data ) {
         data.sort(function(a, b) {
           return ((a.last_name < b.last_name) ? -1 : ((a.last_name > b.last_name) ? 1 : 0));
         });        
