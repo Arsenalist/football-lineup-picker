@@ -21,6 +21,7 @@ var PlayerFinder = React.createClass({
   },
 
   componentDidMount: function() {
+    console.log("componentDidMount");
     AppStore.addChangeListener(this._onChange);
     AppActionCreator.getPlayers();
   },

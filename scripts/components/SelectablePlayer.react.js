@@ -1,10 +1,11 @@
-var Common = require('./common.js');
-
 var React = require('react');
+var AppActionCreators = require('../actioncreators/AppActionCreators.js');
+
+
 var SelectablePlayer = React.createClass({
   handlePlayerSelection: function(e){
     e.preventDefault();
-    Common.PitchActions.addPlayer(this.props.data);
+    AppActionCreators.addPlayer(this.props.data);
   },
   render: function() {
     return(

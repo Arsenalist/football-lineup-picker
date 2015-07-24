@@ -3,51 +3,55 @@ var PlayerGroup = require('./PlayerGroup.react.js');
 var PlayerGroupList = require('./PlayerGroupList.react.js');
 var UserActions = require('./UserActions.react.js');
 var PlayerFinder = require('./PlayerFinder.react.js');
-var Common = require('./common.js');
+var AppStore = require('../stores/AppStore.js');
+var AppActionCreator = require('../actioncreators/AppActionCreators.js');
 
 var React = require('react');
 
 
 var Pitch = React.createClass({
-  getStateFromStore: function() {
-    return Common.PitchStore.getState();
-  },
 
   getInitialState: function() {
-    var key = this.props.params.key;
-    if (key) {
-      console.log("loading from URls");
-      Common.PitchActions.loadPitchData(key);
-    } else {
-      Common.PitchActions.setFormation('4-4-2');
+    var key = '';
+    if (this.props.params) {
+      key = this.props.params.key;
     }
-    console.log("initial state in pitch is ", this.getStateFromStore());
+    return {
+      lineup: {},
+      key: key
+    };
+  },
 
-    return this.getStateFromStore();
+  componentWillUnmount: function() {
+    AppStore.removeChangeListener(this._onChange);
   },
 
   componentDidMount: function() {
-    // when the assignment store says its data changed, we update
-    console.log("Pitch component mounted");
-    Common.PitchStore.onChange = this.onChange;
+    AppStore.addChangeListener(this._onChange);
+    if (this.state.key) {
+      AppActionCreator.getLineup(this.state.key);
+    } else {
+      AppActionCreator.setFormation('4-4-2');
+    }
   },
 
-  onChange: function() {
-    console.log("onChange in Pitch, calling setState");
-    this.setState(this.getStateFromStore());
+  _onChange: function() {
+    if (this.state.key != '') {
+      this.setState({
+        lineup: AppStore.getLineup(this.state.key)
+      });
+    }
   },
+
 
   render: function() {
-    if (!this.state.data){
-      return <div className="spinner"></div>
-    }
     return (
       <div>
       <div className="row">
         <div className="col-xs-6">
           <FormationSelector />
           <div className="pitch">
-            <PlayerGroupList />
+            <PlayerGroupList lineup={this.state.lineup}/>
           </div>
           <UserActions />
         </div>

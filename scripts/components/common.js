@@ -87,13 +87,11 @@ PitchStore:  {
   },
 
   loadPitchData: function(key) {
-    var that = this;
     var url = "https://zarar.firebaseio.com/lineups/" + key;
     console.log(url);
     var fire = new Firebase(url);
     fire.on("value", function(snapshot) {
       if (snapshot.val() != null) {
-
         that._state.data.pitch = snapshot.val();
         console.log(snapshot.val());
         console.log("about to call onchange inside firebase success", that._state.data.pitch);
@@ -102,7 +100,6 @@ PitchStore:  {
         PitchActions.setFormation('4-4-2');
         console.log("fa is ", PitchActions.getPitchData());
       }
-      that.onChange();
     }, function (errorObject) {
       alert("The read failed: " + errorObject.code);
     });

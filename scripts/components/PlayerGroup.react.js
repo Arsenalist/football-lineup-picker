@@ -1,11 +1,20 @@
 var EmptyPlayer = require('./EmptyPlayer.react.js');
 var Player = require('./Player.react.js');
+var ActivePlayer = require('./ActivePlayer.react.js');
+
+var AppConstants = require('../constants/AppConstants.js');
 
 var React = require('react');
 
 var PlayerGroup = React.createClass({
+
+  getInitialState: function(){
+    return {
+      players: this.props.data.players
+    }
+  },
   render: function() {
-    var numPlayers = this.props.data.players.length;
+    var numPlayers = this.state.players.length;
     var colClass;
     switch(numPlayers) {
         case 1:
@@ -27,11 +36,19 @@ var PlayerGroup = React.createClass({
             colClass = 'col-xs-12';
     }
     colClass = colClass;
-    var players = this.props.data.players.map(function (player) {
-      var playerOrEmpty = player.name == "" ? <EmptyPlayer key={player.key} data={player}/> : <Player key={player.key} onRemovePlayer={this.removePlayer} key={player.name} data={player}/>;
+    var players = this.state.players.map(function (player) {
+      var component;
+      if (player.markForReplacement) {
+        component = <ActivePlayer/>
+      } else if (player.name == "") {
+        component = <EmptyPlayer data={player}/> 
+      } else {
+        component = <Player data={player}/>;
+      }
+      console.log(component);
       return (
         <div className={colClass}>
-          {playerOrEmpty}
+          {component}
         </div>
       );
     }.bind(this));

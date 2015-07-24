@@ -1,15 +1,19 @@
 
 var React = require('react');
-var Common = require('./common.js');
+var ActivePlayer = require('./ActivePlayer.react.js');
+var AppActionCreator = require('../actioncreators/AppActionCreators.js');
+
+
 
 var EmptyPlayer = React.createClass({
-  handleReplacePlayer: function() {
-    Common.PitchActions.fillPosition(this.props.data);
+
+  handlePlayerReplace: function(){
+    AppActionCreator.markForReplacement(this.props.data.key);
   },
   render: function() {
-    return (
+    return (      
       <div className="player">
-        <img onClick={this.handleReplacePlayer} className="shirt" src="http://cdn.ismfg.net/static/plfpl/img/shirts/shirt_0.png"/>
+        <img onClick={this.handlePlayerReplace} className="shirt" src="http://cdn.ismfg.net/static/plfpl/img/shirts/shirt_0.png"/>
       </div>
     );
   }

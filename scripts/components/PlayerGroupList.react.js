@@ -1,14 +1,13 @@
 var PlayerGroup = require('./PlayerGroup.react.js');
-var Common = require('./common.js');
 
 var React = require('react');
 var PlayerGroupList = React.createClass({
   render: function() {
-    if (jQuery.isEmptyObject(Common.PitchActions.getPitchData())) {
-      console.log("compareing == true");
+    console.log("playergrouplist render", this.props);
+    if (jQuery.isEmptyObject(this.props.lineup)) {
       return <div>Loading</div>;
     }
-    var playerGroups = Common.PitchActions.getPitchData().playerGroups.map(function (playerGroup) {
+    var playerGroups = this.props.lineup.playerGroups.map(function (playerGroup) {
       return (
         <PlayerGroup key={playerGroup.groupType} data={playerGroup} />
       );
