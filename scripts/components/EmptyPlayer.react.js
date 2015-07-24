@@ -14,7 +14,7 @@ var EmptyPlayer = React.createClass({
   render: function() {
     return (      
       <div className="player">
-        <img onClick={this.handlePlayerReplace} className="shirt" src="https://cdn.ismfg.net/static/plfpl/img/shirts/shirt_0.png"/>
+        <img onClick={this.handlePlayerReplace} className="shirt" src="http://cdn.ismfg.net/static/plfpl/img/shirts/shirt_0.png"/>
       </div>
     );
   }
