@@ -1,5 +1,4 @@
 var Message = require('./Message.react.js');
-var Common = require('./common.js');
 var AppActionCreator = require('../actioncreators/AppActionCreators.js');
 var AppStore = require('../stores/AppStore.js');
 var React = require('react');

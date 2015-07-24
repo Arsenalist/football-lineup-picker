@@ -1,4 +1,3 @@
-var Common = require('./common.js');
 var React = require('react');
 var AppActionCreator = require('../actioncreators/AppActionCreators.js');
 
