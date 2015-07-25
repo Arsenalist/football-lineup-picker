@@ -48,14 +48,14 @@ var Pitch = React.createClass({
     return (
       <div>
       <div className="row">
-        <div className="col-xs-6">
+        <div className="col-xs-12 col-sm-9 col-md-7 col-lg-6">
           <FormationSelector />
           <div className="pitch">
             <PlayerGroupList lineup={this.state.lineup}/>
           </div>
           <UserActions />
         </div>
-        <div className="col-xs-6">
+        <div className="col-xs-12 col-sm-3 col-md-5 col-lg-6">
           <PlayerFinder />
         </div>
       </div>

@@ -57,18 +57,22 @@ var PlayerFinder = React.createClass({
 
     return (
       <div>
+      <p className="positionFilter">
         <select onChange={this.handleFilterPosition} ref="position">
           <option value="">Show All</option>
           <option value="D">Show Defenders</option>
           <option value="M">Show Midfielders</option>
           <option value="F">Show Forwards</option>
         </select>
+      </p>
         <table className="table table-striped table-condensed table-bordered">
         <tr>
           <th>Name</th>
           <th>Position</th>
         </tr>
+        <tbody>
           {selectablePlayers}
+        </tbody>
         </table>
       </div>
     );
