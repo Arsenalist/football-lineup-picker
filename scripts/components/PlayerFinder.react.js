@@ -56,7 +56,7 @@ var PlayerFinder = React.createClass({
     });
 
     return (
-      <div>
+      <div className="playerFinder">
       <p className="positionFilter">
         <select onChange={this.handleFilterPosition} ref="position">
           <option value="">Show All</option>

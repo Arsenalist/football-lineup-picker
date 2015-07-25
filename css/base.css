@@ -36,3 +36,10 @@
 .share-link {
   margin: 10px;
 }
+.playerFinder {
+  width: 200px;
+}
+.playerFinder td, .playerFinder th {
+  font-size: 10px;
+  padding: 2px;
+}
