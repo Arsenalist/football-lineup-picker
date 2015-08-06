@@ -39,22 +39,18 @@ var PlayerGroup = React.createClass({
     var players = this.state.players.map(function (player) {
       var component;
       if (player.markForReplacement) {
-        component = <ActivePlayer key="active"/>
+        component = <ActivePlayer pitch={this.props.pitch} key="active"/>
       } else if (player.name == "") {
-        component = <EmptyPlayer key={player.key} data={player}/> 
+        component = <EmptyPlayer pitch={this.props.pitch} key={player.key} data={player}/> 
       } else {
-        component = <Player key={player.key} data={player}/>;
+        component = <Player pitch={this.props.pitch} key={player.key} data={player}/>;
       }
       return (
-        <div className={colClass}>
           {component}
-        </div>
       );
     }.bind(this));
     return (
-      <div className="playerGroup row">
-      {players}
-      </div>
+      <span>{players}</span>
     );
   }
 });

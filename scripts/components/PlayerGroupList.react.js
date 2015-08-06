@@ -6,15 +6,14 @@ var PlayerGroupList = React.createClass({
     if (jQuery.isEmptyObject(this.props.lineup)) {
       return <div>Loading</div>;
     }
+    var pitch = this.props.pitch;
     var playerGroups = this.props.lineup.playerGroups.map(function (playerGroup) {
       return (
-        <PlayerGroup key={playerGroup.groupType} data={playerGroup} />
+        <PlayerGroup pitch={pitch} key={playerGroup.groupType} data={playerGroup} />
       );
     });
     return (
-      <div className="playerGroups">
-        {playerGroups}
-      </div>
+        <span>{playerGroups}</span>
     );
   }
 });
