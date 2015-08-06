@@ -15,8 +15,8 @@ var Message = React.createClass({
   },
 
   componentDidUpdate: function() {
-    if (FB) FB.XFBML.parse();
-    twttr.widgets.load();
+    // if (FB) FB.XFBML.parse();
+    //twttr.widgets.load();
   },
 
   componentDidMount: function() {

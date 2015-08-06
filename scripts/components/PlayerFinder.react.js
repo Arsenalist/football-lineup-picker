@@ -22,12 +22,12 @@ var PlayerFinder = React.createClass({
 
   componentDidMount: function() {
     AppStore.addChangeListener(this._onChange);
-    AppActionCreator.getPlayers();
+    AppActionCreator.getPlayers(AppStore.getCurrentTeam().id);
   },
 
   _onChange: function() {
     this.setState({
-      players: AppStore.getPlayers()
+      players: AppStore.getPlayers(AppStore.getCurrentTeam().id)
     });
   },
 

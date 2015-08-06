@@ -33,15 +33,17 @@ var FormationSelector = React.createClass({
   },
 
   render: function() {
+    var formations = ['3-4-3', '3-2-4-1', '4-4-2', '4-3-3', '4-2-3-1', '5-3-2', '5-4-1'];
+    var formationOptions = [];
+    for (var i=0; i<formations.length; i++) {
+      formationOptions.push(<option value={formations[i]}>{formations[i]}</option>);
+    }
+
     return (
       <div className="formationSelector">
         <select value="" ref="formation" onChange={this.handleFormationChange}>
           <option value="">Change Formation</option>
-          <option value="3-4-3">3-4-3</option>
-          <option value="4-4-2">4-4-2</option>
-          <option value="4-1-3-1">4-1-3-1</option>
-          <option value="5-3-2">5-3-2</option>
-          
+          {formationOptions}          
         </select>
       </div>
     );

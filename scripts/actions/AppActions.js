@@ -12,6 +12,18 @@ var AppActions = {
       players: players
     });
   },
+  setTeams: function(teams) {
+    AppDispatcher.dispatch({
+      actionType: AppConstants.RECEIVE_TEAMS,
+      teams: teams
+    });
+  },
+  setCurrentTeam: function(team) {
+    AppDispatcher.dispatch({
+      actionType: AppConstants.SET_CURRENT_TEAM,
+      team: team
+    });
+  },
   setLineup: function(lineup) {
     AppDispatcher.dispatch({
       actionType: AppConstants.RECEIVE_LINEUP,

@@ -13,9 +13,14 @@ var Pitch = React.createClass({
 
   getInitialState: function() {
     var key = '';
-    if (this.props.params) {
-      key = this.props.params.key;
+    // TODO: Fix multiple things happening
+    // TODO: Retrieve teamId from server when key is present and set it elsewhere
+    if (this.props.params.teamId) {
+      AppActionCreator.setCurrentTeam(this.props.params.teamId);
     }
+    if (this.props.params.key) {
+      key = this.props.params.key;      
+    }    
     return {
       lineup: {},
       key: key
@@ -36,11 +41,9 @@ var Pitch = React.createClass({
   },
 
   _onChange: function() {
-    if (this.state.key != '') {
-      this.setState({
-        lineup: AppStore.getLineup(this.state.key)
-      });
-    }
+    this.setState({
+      lineup: AppStore.getLineup()
+    });
   },
 
 

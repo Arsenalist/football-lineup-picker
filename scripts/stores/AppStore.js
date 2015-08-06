@@ -5,11 +5,13 @@ var assign = require('object-assign');
 
 var CHANGE_EVENT = 'change';
 
+var _teams = [];
 var _players = [];
 var _lineup = {};
 var _formation = null;
 var _message = null;
 var _location = null
+var _currentTeam = {};
 
 var AppStore = assign({}, EventEmitter.prototype, {
   setSaveLineupMessage: function(lineup) {
@@ -99,6 +101,10 @@ var AppStore = assign({}, EventEmitter.prototype, {
     return _location;
   },
 
+  getCurrentTeam: function() {
+    return _currentTeam;
+  },
+
   getMessage: function() {
     return _message;
   },
@@ -106,7 +112,9 @@ var AppStore = assign({}, EventEmitter.prototype, {
   getPlayers: function() {
   	return _players;
   },
-
+  getTeams: function() {
+    return _teams;
+  },
   getLineup: function() {
     return _lineup;
   },
@@ -115,6 +123,30 @@ var AppStore = assign({}, EventEmitter.prototype, {
     return _formation;
   },
 
+  updatePlayerGroups: function(playerGroups) {
+    // Copy over players, but not formation
+    if (jQuery.isEmptyObject(_lineup)) {
+      _lineup.playerGroups = playerGroups;
+      return;
+    }
+
+    var merged = [];
+    for (var i=0; i<_lineup.playerGroups.length; i++) {
+      for (var j=0; j<_lineup.playerGroups[i].players.length; j++) {
+        merged.push(_lineup.playerGroups[i].players[j]);
+      }
+    }
+
+    var track = 0;
+    for (var i=0; i<playerGroups.length; i++) {
+      for (var j=0; j<playerGroups[i].players.length; j++) {
+        playerGroups[i].players[j] = merged[track];
+        track++;
+      }
+    }
+
+    _lineup.playerGroups = playerGroups;
+  },
   emitChange: function() {
     this.emit(CHANGE_EVENT);
   },
@@ -142,13 +174,17 @@ AppDispatcher.register(function(action) {
        _players = action.players;
        AppStore.emitChange();
          break;
+    case AppConstants.RECEIVE_TEAMS:
+       _teams = action.teams;
+       AppStore.emitChange();
+         break;
     case AppConstants.RECEIVE_LINEUP:
        _lineup = action.lineup;
        AppStore.emitChange();
          break;
     case AppConstants.SET_FORMATION:
        _formation = action.formation;
-       _lineup.playerGroups = action.playerGroups
+       AppStore.updatePlayerGroups(action.playerGroups);
        AppStore.emitChange();
          break;
     case AppConstants.ADD_PLAYER:
@@ -171,6 +207,10 @@ AppDispatcher.register(function(action) {
        _lineup = action.lineup;
        AppStore.setLocation(action.lineup);
        AppStore.setSaveLineupMessage(action.lineup);
+       AppStore.emitChange();
+         break;
+    case AppConstants.SET_CURRENT_TEAM:
+       _currentTeam = action.team;
        AppStore.emitChange();
          break;
     default:

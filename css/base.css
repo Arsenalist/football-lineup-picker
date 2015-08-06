@@ -1,7 +1,7 @@
 .pitch {
   width: 490px;
   height: 470px;
-  background: url('http://cdn.ismfg.net/static/plfpl/img/pitch.png');
+  /* background: url('http://cdn.ismfg.net/static/plfpl/img/pitch.png'); */
   text-align: center;
   margin: auto auto;
 }

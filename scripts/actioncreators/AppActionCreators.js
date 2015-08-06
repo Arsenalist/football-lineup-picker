@@ -75,12 +75,21 @@ var AppActionCreator = {
     });
   },
 
-  getPlayers: function() {
-    $.get( "https://api.thescore.com/epl/teams/56/players", function( data ) {
+  getPlayers: function(teamId) {
+    console.log("get players teamId in appactioncreators ", teamId)
+    $.get( "https://api.thescore.com/epl/teams/" + teamId + "/players", function( data ) {
         data.sort(function(a, b) {
           return ((a.last_name < b.last_name) ? -1 : ((a.last_name > b.last_name) ? 1 : 0));
         });        
         AppActions.setPlayers(data);
+     });
+  },
+  getTeams: function() {
+    $.get( "https://api.thescore.com/epl/teams/", function( data ) {
+        data.sort(function(a, b) {
+          return ((a.full_name < b.full_name) ? -1 : ((a.full_name > b.full_name) ? 1 : 0));
+        });        
+        AppActions.setTeams(data);
      });
   },
   getLineup: function(key) {
@@ -90,6 +99,7 @@ var AppActionCreator = {
       if (snapshot.val() != null) {
         AppActions.setLineup(snapshot.val());
       } else {
+        // TODO: Use AppAction instead of AppDispatcher
         AppDispatcher.dispatch({
           actionType: AppConstants.LINEUP_NOT_FOUND
         });
@@ -103,6 +113,15 @@ var AppActionCreator = {
       return;
     var playerGroups = generatePlayerGroups(formation);
     AppActions.setFormation(formation, playerGroups);
+  },
+  setCurrentTeam: function(teamId) {
+    var team = {
+      id: teamId,
+      name: '',
+      logo: 'http://d1si3tbndbzwz9.cloudfront.net/soccer/team/' + teamId + '/small_logo.png'
+    };
+
+    AppActions.setCurrentTeam(team);
   },
   addPlayer: function(player) {
     AppActions.addPlayer(player);

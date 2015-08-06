@@ -39,11 +39,11 @@ var PlayerGroup = React.createClass({
     var players = this.state.players.map(function (player) {
       var component;
       if (player.markForReplacement) {
-        component = <ActivePlayer/>
+        component = <ActivePlayer key="active"/>
       } else if (player.name == "") {
-        component = <EmptyPlayer data={player}/> 
+        component = <EmptyPlayer key={player.key} data={player}/> 
       } else {
-        component = <Player data={player}/>;
+        component = <Player key={player.key} data={player}/>;
       }
       return (
         <div className={colClass}>
