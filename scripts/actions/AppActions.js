@@ -37,6 +37,13 @@ var AppActions = {
       playerGroups: playerGroups
     });
   },
+  setEmptyFormation: function(formation, playerGroups) {
+    AppDispatcher.dispatch({
+      actionType: AppConstants.SET_EMPTY_FORMATION,
+      formation: formation,
+      playerGroups: playerGroups
+    });
+  },
   addPlayer: function(player) {
     AppDispatcher.dispatch({
       actionType: AppConstants.ADD_PLAYER,

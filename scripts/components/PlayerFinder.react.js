@@ -21,17 +21,19 @@ var PlayerFinder = React.createClass({
   },
 
   componentDidMount: function() {
+    console.log("componentDidMount", this.state.lineup);
     AppStore.addChangeListener(this._onChange);
-    AppActionCreator.getPlayers(AppStore.getCurrentTeam().id);
   },
 
   _onChange: function() {
     this.setState({
-      players: AppStore.getPlayers(AppStore.getCurrentTeam().id)
+      players: AppStore.getPlayers()
     });
   },
 
   render: function() {
+    console.log("render called");
+    console.log("players are ", this.state.players);
     var filteredPlayers = [];
     if (this.state.filterPosition == '') {            
       filteredPlayers = this.state.players;

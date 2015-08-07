@@ -10,7 +10,7 @@ var ActivePlayer = React.createClass({
 
   handleSelectTeam: function(e) {
     e.preventDefault();
-    this.transitionTo('/pitch/new/' + e.target.value);
+    this.transitionTo('/new/' + e.target.value);
 
   },
   getInitialState: function() {

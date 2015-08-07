@@ -17,8 +17,7 @@ var Pitch = React.createClass({
     // TODO: Retrieve teamId from server when key is present and set it elsewhere
     if (this.props.params.teamId) {
       AppActionCreator.setCurrentTeam(this.props.params.teamId);
-    }
-    if (this.props.params.key) {
+    } else if (this.props.params.key) {
       key = this.props.params.key;      
     }    
     return {
@@ -36,7 +35,7 @@ var Pitch = React.createClass({
     if (this.state.key) {
       AppActionCreator.getLineup(this.state.key);
     } else {
-      AppActionCreator.setFormation('4-4-2');
+      AppActionCreator.setEmptyFormation('4-4-2');
     }
   },
 
@@ -59,7 +58,7 @@ var Pitch = React.createClass({
           <UserActions />
         </div>
         <div className="col-xs-12 col-sm-3 col-md-5 col-lg-6">
-          <PlayerFinder />
+          <PlayerFinder lineup={this.state.lineup}/>
         </div>
       </div>
       </div>

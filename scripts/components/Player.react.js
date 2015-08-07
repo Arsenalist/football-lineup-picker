@@ -8,7 +8,7 @@ var Player = React.createClass({
   },
   componentDidMount: function() {
     this.setState({
-      team: AppStore.getCurrentTeam()
+      team: AppStore.getLineup().team
     });
   },
   handleRemove: function() {

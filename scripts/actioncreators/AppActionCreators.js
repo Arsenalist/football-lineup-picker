@@ -98,6 +98,7 @@ var AppActionCreator = {
     fire.on("value", function(snapshot) {
       if (snapshot.val() != null) {
         AppActions.setLineup(snapshot.val());
+        AppActionCreator.getPlayers(snapshot.val().team.id);
       } else {
         // TODO: Use AppAction instead of AppDispatcher
         AppDispatcher.dispatch({
@@ -114,14 +115,20 @@ var AppActionCreator = {
     var playerGroups = generatePlayerGroups(formation);
     AppActions.setFormation(formation, playerGroups);
   },
+  setEmptyFormation: function(formation) {
+    if (!formation)
+      return;
+    var playerGroups = generatePlayerGroups(formation);
+    AppActions.setEmptyFormation(formation, playerGroups);
+  },
   setCurrentTeam: function(teamId) {
     var team = {
       id: teamId,
       name: '',
       logo: 'http://d1si3tbndbzwz9.cloudfront.net/soccer/team/' + teamId + '/small_logo.png'
     };
-
     AppActions.setCurrentTeam(team);
+    AppActionCreator.getPlayers(team.id);
   },
   addPlayer: function(player) {
     AppActions.addPlayer(player);

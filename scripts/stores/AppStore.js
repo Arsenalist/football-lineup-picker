@@ -11,17 +11,16 @@ var _lineup = {};
 var _formation = null;
 var _message = null;
 var _location = null
-var _currentTeam = {};
 
 var AppStore = assign({}, EventEmitter.prototype, {
   setSaveLineupMessage: function(lineup) {
-    var permalink = location.origin + location.pathname + '#/pitch/' + lineup.key;
+    var permalink = location.origin + location.pathname + '#/lineup/' + lineup.key;
     _message = '<div class="share-link">Lineup permalink: <input class="form-control" type="text" value="' + permalink + '" onclick="this.select()"/></div>' +
       '<div class="share-link"><div class="fb-share-button" data-layout="button"></div></div>' +
       '<div class="share-link"><a href="https://twitter.com/share" class="twitter-share-button" data-via="arseblog" data-related="arseblog" data-count="none">Tweet</div>';
   },
   setLocation: function(lineup) {
-    _location = '/pitch/' + lineup.key;
+    _location = '/lineup/' + lineup.key;
   },
 
   isPlayerAlreadyAdded: function(playerKey) {
@@ -101,10 +100,6 @@ var AppStore = assign({}, EventEmitter.prototype, {
     return _location;
   },
 
-  getCurrentTeam: function() {
-    return _currentTeam;
-  },
-
   getMessage: function() {
     return _message;
   },
@@ -124,6 +119,7 @@ var AppStore = assign({}, EventEmitter.prototype, {
   },
 
   updatePlayerGroups: function(playerGroups) {
+    console.log("player groups are", playerGroups);
     // Copy over players, but not formation
     if (jQuery.isEmptyObject(_lineup)) {
       _lineup.playerGroups = playerGroups;
@@ -187,6 +183,11 @@ AppDispatcher.register(function(action) {
        AppStore.updatePlayerGroups(action.playerGroups);
        AppStore.emitChange();
          break;
+    case AppConstants.SET_EMPTY_FORMATION:
+       _formation = action.formation;
+       _lineup.playerGroups = action.playerGroups;
+       AppStore.emitChange();
+         break;
     case AppConstants.ADD_PLAYER:
        AppStore.addPlayer(action.player);
        AppStore.emitChange();
@@ -210,7 +211,7 @@ AppDispatcher.register(function(action) {
        AppStore.emitChange();
          break;
     case AppConstants.SET_CURRENT_TEAM:
-       _currentTeam = action.team;
+       _lineup.team = action.team;
        AppStore.emitChange();
          break;
     default:
